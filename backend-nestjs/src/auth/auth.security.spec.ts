@@ -1,7 +1,7 @@
 jest.mock('@nestjs/typeorm', () => ({ InjectRepository: () => () => {} }));
 jest.mock('../redis/otp.service', () => ({ OtpService: class {} }));
 
-import { UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { UnauthorizedException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { validateSync } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import * as bcrypt from 'bcryptjs';
@@ -170,6 +170,10 @@ describe('Admin password authentication security', () => {
   it('rejects passwordless login via sendOtp and verifyOtp', async () => {
     await expect(service.sendOtp({ email: admin.email })).rejects.toBeInstanceOf(BadRequestException);
     await expect(service.verifyOtp({ email: admin.email, code: '123456' })).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('rejects Google login unless explicitly enabled', async () => {
+    await expect(service.googleLogin({ token: 'unused' })).rejects.toBeInstanceOf(ForbiddenException);
   });
 });
 

@@ -1,6 +1,7 @@
 import {
   Injectable,
   BadRequestException,
+  ForbiddenException,
   UnauthorizedException,
   NotFoundException,
   InternalServerErrorException,
@@ -294,6 +295,10 @@ export class AuthService {
   }
 
   async googleLogin(dto: OAuthDto) {
+    if (!this.configService.get<boolean>('oauth.googleEnabled')) {
+      throw new ForbiddenException('Google login is disabled');
+    }
+
     let payload;
     try {
       const ticket = await this.googleClient.verifyIdToken({
