@@ -640,7 +640,20 @@ export class QuestionsService {
     return question;
   }
 
-  async getTopicsDistribution() {
+  async getTopicsDistribution(subject?: string) {
+    if (subject?.trim()) {
+      return this.questionRepository.query(
+        `SELECT DISTINCT subtopic AS topic
+         FROM questions
+         WHERE status = 'approved'
+           AND subtopic IS NOT NULL
+           AND BTRIM(subtopic) <> ''
+           AND (topic = $1 OR (metadata->'categories') ? $1)
+         ORDER BY subtopic`,
+        [subject.trim()],
+      ).then((rows: { topic: string }[]) => rows.map((row) => row.topic));
+    }
+
     const query = await this.questionRepository.query(`
       SELECT 
         category as topic,
