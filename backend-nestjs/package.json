@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "nest start --watch",
-    "build": "node scripts/build.js",
+    "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true});require('node:fs').rmSync('tsconfig.build.tsbuildinfo',{force:true})\" && tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "typeorm:sync": "node dist/sync-db.js",
@@ -58,6 +58,7 @@
     "bullmq": "^5.80.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "codeskill-platform": "file:..",
     "compression": "^1.8.1",
     "dotenv": "17.4.1",
     "google-auth-library": "^10.9.0",
